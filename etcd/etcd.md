@@ -1,5 +1,5 @@
 
-# 测试磁盘性能是否符合etcd指标
+### 测试磁盘性能是否符合etcd指标
 
 ```
 #!/bin/bash
@@ -24,4 +24,13 @@ echo "99th percentile of the fsync is greater than the recommended value which i
 else
 echo "99th percentile of the fsync is within the recommended threshold - 10 ms, the disk can be used to host etcd"
 fi
+```
+
+### 查询前30位的etcd数据占用情况
+```
+etcdctl get --prefix /kubernetes.io/ --keys-only | grep -v "^$" | rev | cut -d/ -f2- | rev | sort | uniq -c | sort -rn | head -n 30
+```
+### 删除指定前缀的key
+```
+etcdctl del --prev-kv --prefix /kubernetes.io/secrets/kruise-system
 ```
