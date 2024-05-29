@@ -12,3 +12,8 @@ kubectl get --raw /api/v1/nodes/single1/proxy/stats/summary | grep containers -C
 
 ### 查看资源修改详情
 kubectl get cm -n kube-system bootstrap -oyaml --show-managed-fields=true
+
+
+### 检测磁盘信息
+smartctl -g wcache /dev/sda
+sudo dd if=/dev/sda of=/dev/null bs=1M(4k) count=1024 iflag=direct

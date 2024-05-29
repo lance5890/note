@@ -69,3 +69,17 @@ ip netns exec fe5dc27e-42a5-4534-9e72-368e7f302819 iptables-save  ### 查看所�
 sudo lsof /var/lib/containers/storage/{storage.lock,overlay-layers/layers.lock}
 sudo lslocks | grep layers
 ```
+
+
+### 使用sysctl
+```azure
+sysctl -a | grep ip_local_port_range  ## 查看本地端口范围
+```
+
+### 时钟同步
+```azure
+# 查看时钟源情况
+chronyc -n sources -v  
+# 检查时钟差异
+clockdiff -o
+```
