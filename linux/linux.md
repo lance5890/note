@@ -83,3 +83,9 @@ chronyc -n sources -v
 # 检查时钟差异
 clockdiff -o
 ```
+
+
+### 查询每个节点的时钟
+```azure
+for host in `kubectl get nodes -owide |sed '1d'|  awk '{print $6}'`; do (echo $host; ssh -i id_rsa -o StrictHostKeyChecking=no ccadmin@"$host" `date`) done
+```
