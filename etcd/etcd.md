@@ -1,17 +1,16 @@
 
-### 测试磁盘性能是否符合etcd指标
-
+### fio 测试磁盘性能是否符合etcd指标
 ```
 #!/bin/bash
 
 set -e
 
 # Create etcd write dir if it doesn't exist
-mkdir -p /var/lib/etcd
+mkdir -p /tmp/etcd
 
 # Run fio
 echo "---------------------------------------------------------------- Running fio ---------------------------------------------------------------------------"
-fio --rw=write --ioengine=sync --fdatasync=1 --directory=/var/lib/etcd --size=22m --bs=2300 --name=etcd_perf --output-format=json | tee /tmp/fio.out
+fio --rw=write --ioengine=sync --fdatasync=1 --directory=/tmp/etcd --size=22m --bs=2300 --name=etcd_perf --output-format=json | tee /tmp/fio.out
 echo "--------------------------------------------------------------------------------------------------------------------------------------------------------"
 
 # Scrape the fio output for p99 of fsync in ns
@@ -26,6 +25,10 @@ echo "99th percentile of the fsync is within the recommended threshold - 10 ms, 
 fi
 ```
 
+```azure
+sudo curl -s --cacert /etc/kubernetes/static-pod-resources/etcd-certs/configmaps/etcd-serving-ca/ca-bundle.crt --key /etc/kubernetes/static-pod-resources/etcd-certs/secrets/etcd-all-certs/etcd-serving-$(hostname).key --cert /etc/kubernetes/static-pod-resources/etcd-certs/secrets/etcd-all-certs/etcd-serving-$(hostname).crt https://127.0.0.1:2379/metrics > /tmp/etcd_metric.txt
+```
+
 ### 查询前30位的etcd数据占用情况
 ```
 #查询 /kubernetes.io/ key 为前缀的k8s资源
@@ -37,4 +40,17 @@ etcdctl get / --prefix --keys-only | grep -v "^$" | cut -d/ -f3 | sort | uniq -c
 ### 删除指定前缀的key
 ```
 etcdctl del --prev-kv --prefix /kubernetes.io/secrets/kruise-system
+```
+
+### dd命名测试磁盘性能
+```azure
+dd if=/dev/zero of=./test bs=4k count=1024 oflag=direct
+
+dd if=/dev/zero of=./test bs=4k count=10240 oflag=dsync
+```
+
+
+```azure
+// 便利lease查询
+for l in $(etcdctl lease list | grep -v found);do if [ `etcdctl lease timetolive $l -w json | grep 997142320965431125` ]; then  echo -n "$l ";fi;done
 ```

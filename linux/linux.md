@@ -87,5 +87,12 @@ clockdiff -o
 
 ### 查询每个节点的时钟
 ```azure
-for host in `kubectl get nodes -owide |sed '1d'|  awk '{print $6}'`; do (echo $host; ssh -i id_rsa -o StrictHostKeyChecking=no ccadmin@"$host" `date`) done
+for host in `kubectl get nodes -owide |sed '1d'|  awk '{print $6}'`; do (echo $host; ssh -i id_rsa -o StrictHostKeyChecking=no ccadmin@"$host" date) done
+```
+
+### iostat 查看io瓶颈
+```azure
+//r_await 平均读延迟，单位ms 
+//w_await 平均写延迟，单位ms
+iostat -xzm 2
 ```
