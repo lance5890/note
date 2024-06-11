@@ -96,3 +96,9 @@ for host in `kubectl get nodes -owide |sed '1d'|  awk '{print $6}'`; do (echo $h
 //w_await 平均写延迟，单位ms
 iostat -xzm 2
 ```
+
+### 检测磁盘信息
+```azure
+smartctl -g wcache /dev/sda
+sudo dd if=/dev/sda of=/dev/null bs=1M(4k) count=1024 iflag=direct
+```

@@ -25,13 +25,20 @@ echo "99th percentile of the fsync is within the recommended threshold - 10 ms, 
 fi
 ```
 
+### dd命名测试磁盘性能
+```azure
+dd if=/dev/zero of=./test bs=4k count=1024 oflag=direct
+
+dd if=/dev/zero of=./test bs=4k count=10240 oflag=dsync
+```
+
 ```azure
 sudo curl -s --cacert /etc/kubernetes/static-pod-resources/etcd-certs/configmaps/etcd-serving-ca/ca-bundle.crt --key /etc/kubernetes/static-pod-resources/etcd-certs/secrets/etcd-all-certs/etcd-serving-$(hostname).key --cert /etc/kubernetes/static-pod-resources/etcd-certs/secrets/etcd-all-certs/etcd-serving-$(hostname).crt https://127.0.0.1:2379/metrics > /tmp/etcd_metric.txt
 ```
 
 ### 查询前30位的etcd数据占用情况
 ```
-#查询 /kubernetes.io/ key 为前缀的k8s资源
+// 查询 /kubernetes.io/ key 为前缀的k8s资源
 etcdctl get --prefix /kubernetes.io/ --keys-only | grep -v "^$" | rev | cut -d/ -f2- | rev | sort | uniq -c | sort -rn | head -n 30
 
 // 查看 / 所有资源的排序
@@ -42,15 +49,9 @@ etcdctl get / --prefix --keys-only | grep -v "^$" | cut -d/ -f3 | sort | uniq -c
 etcdctl del --prev-kv --prefix /kubernetes.io/secrets/kruise-system
 ```
 
-### dd命名测试磁盘性能
 ```azure
-dd if=/dev/zero of=./test bs=4k count=1024 oflag=direct
 
-dd if=/dev/zero of=./test bs=4k count=10240 oflag=dsync
-```
-
-
-```azure
-// 便利lease查询
+# 便利lease查询
 for l in $(etcdctl lease list | grep -v found);do if [ `etcdctl lease timetolive $l -w json | grep 997142320965431125` ]; then  echo -n "$l ";fi;done
+
 ```

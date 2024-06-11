@@ -14,6 +14,9 @@ kubectl get --raw /api/v1/nodes/single1/proxy/stats/summary | grep containers -C
 kubectl get cm -n kube-system bootstrap -oyaml --show-managed-fields=true
 
 
-### 检测磁盘信息
-smartctl -g wcache /dev/sda
-sudo dd if=/dev/sda of=/dev/null bs=1M(4k) count=1024 iflag=direct
+###
+```azure
+// 查看用户的操作权限
+kubectl auth can-i update clusterversions.config.ccos.io/finalizers --as=system:serviceaccount:kube-system:statefulset-controllerku	
+
+```
