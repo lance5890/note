@@ -102,3 +102,10 @@ iostat -xzm 2
 smartctl -g wcache /dev/sda
 sudo dd if=/dev/sda of=/dev/null bs=1M(4k) count=1024 iflag=direct
 ```
+
+
+### grep
+```azure
+// 搜索审计日志
+sudo grep -rn "test" /var/log/kube-apiserver/
+```
