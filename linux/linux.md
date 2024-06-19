@@ -109,3 +109,23 @@ sudo dd if=/dev/sda of=/dev/null bs=1M(4k) count=1024 iflag=direct
 // 搜索审计日志
 sudo grep -rn "test" /var/log/kube-apiserver/
 ```
+
+```
+
+###
+```azure
+iptables -t nat -S -v
+iptables -t nat -L -v
+iptables -t nat -nL
+ipset list KUBE-CLUSTER-IP
+查看 hostport对应的iptables规则
+iptables-save -t nat | grep KUBE-HOSTPORTS
+
+// 查看所有iptables规则
+iptables -L
+```
+
+### 日志输出到本地
+```azure
+/usr/bin/cluster-etcd-operator operator 2>&1 | tee -a /etc/kubernetes/cluster-backup/ceo.log  这样就可以了，ceo是打印到错误输出了，不是标准输出
+```

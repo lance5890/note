@@ -55,3 +55,9 @@ etcdctl del --prev-kv --prefix /kubernetes.io/secrets/kruise-system
 for l in $(etcdctl lease list | grep -v found);do if [ `etcdctl lease timetolive $l -w json | grep 997142320965431125` ]; then  echo -n "$l ";fi;done
 
 ```
+
+```azure
+//遍历key，查询key
+for key in $(etcdctl get /kubernetes.io/ --prefix --keys-only );do value=$(etcdctl get "$key" --print-value-only);if [[ "$value" == *"ceaedge-node-1"* ]]; then echo "$key" >> node_name.txt;fi;done
+
+```

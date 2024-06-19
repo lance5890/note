@@ -19,4 +19,3 @@ kubectl get cm -n kube-system bootstrap -oyaml --show-managed-fields=true
 // 查看用户的操作权限
 kubectl auth can-i update clusterversions.config.ccos.io/finalizers --as=system:serviceaccount:kube-system:statefulset-controller
 
-```
