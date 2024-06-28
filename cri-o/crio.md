@@ -1,0 +1,1 @@
+crictl ps | sed 1d | grep " etcd \| kube-apiserver " -v | awk '{print $1}' | xargs crictl stop

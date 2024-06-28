@@ -29,7 +29,7 @@ fi
 ```azure
 dd if=/dev/zero of=./test bs=4k count=1024 oflag=direct
 
-dd if=/dev/zero of=./test bs=4k count=10240 oflag=dsync
+dd if=/dev/zero of=./test bs=4k count=1024 oflag=dsync
 ```
 
 ```azure
