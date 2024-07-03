@@ -129,3 +129,9 @@ iptables -L
 ```azure
 /usr/bin/cluster-etcd-operator operator 2>&1 | tee -a /etc/kubernetes/cluster-backup/ceo.log  这样就可以了，ceo是打印到错误输出了，不是标准输出
 ```
+
+### 检查存储多路径
+```azure
+// 检查失效的多路径
+sudo multipath -ll | grep failed
+```
