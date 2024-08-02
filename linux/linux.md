@@ -17,9 +17,24 @@ find /var/log/ -type f | wc -l
 
 ### 查看系统负载
 ````
-sudo iostat -xz 2  |  查看系统负载
+sudo iostat -xz 2 -t  |  查看系统负载
+iostat -xm 1 /dev/sdb | 查看特定磁盘
+
+
+// 查询iostat 结果，过滤iowait大于100的情况
+#!/bin/bash
+
+awk '/08\/03\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd"
+
+// 到处固件日志
+/opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=xxxx.log
+
+pidstat -d 2 | 查看各个进程的io情况
+
 sar -f sa05 |  sar -d -f sa05 | 查看CPU负载
 sar -f  sa14 -q | 查看历史负载
+
+iotop -b -d 1 -t | 查看环境io是否有异常
 ````
 
 ### 查看CPU负载情况
@@ -134,4 +149,83 @@ iptables -L
 ```azure
 // 检查失效的多路径
 sudo multipath -ll | grep failed
+```
+
+
+### 用bpf统计进程占用sdb系统盘io情况
+```azure
+#!/home/ccadmin/os-debug/x86_64/bpftrace
+/*
+ * biolatency.bt        Block I/O latency as a histogram.
+ *                      For Linux, uses bpftrace, eBPF.
+ *
+ * This is a bpftrace version of the bcc tool of the same name.
+ *
+ * Copyright 2018 Netflix, Inc.
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ *
+ * 13-Sep-2018  Brendan Gregg   Created this.
+ */
+
+BEGIN
+{
+
+        time("==== %H:%M:%S ");
+        printf("Tracing block device I/O... Hit Ctrl-C to end.\n");
+}
+
+kprobe:blk_account_io_start,
+kprobe:__blk_account_io_start
+{
+        $disk = ((struct request*)arg0)->rq_disk->disk_name;
+        $len = ((struct request*)arg0)->__data_len;
+        if (!strncmp($disk, "sd", 2)) {
+                @queue[$disk]++;
+        }
+        if ($len > 60000) {
+                @stacks[arg0] = comm;
+                @start[arg0] = nsecs;
+        }
+}
+
+kprobe:blk_account_io_done,
+kprobe:__blk_account_io_done
+{
+        $disk = ((struct request*)arg0)->rq_disk->disk_name;
+        if (!strncmp($disk, "sd", 2)) {
+                @done[$disk]++;
+        }
+        if (@start[arg0]) {
+                if (!strncmp($disk, "sdb", 3)) {
+                        @from[@stacks[arg0]] = count();
+                }
+        }
+        delete(@stacks[arg0]);
+        delete(@start[arg0]);
+}
+
+interval:s:1
+{
+        time("\n==== %H:%M:%S ====\n");
+        print(@done);
+        print(@queue);
+        print(@from);
+        clear(@done);
+        clear(@queue);
+        clear(@from);
+}
+
+END
+{
+        clear(@queue);
+        clear(@done);
+        clear(@from);
+}
+```
+
+
+```azure
+// 查看默认网络网关的连接ip
+ip r s default
+ip r get x.x.x.1
 ```

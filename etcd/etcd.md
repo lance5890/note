@@ -29,7 +29,7 @@ fi
 ```azure
 dd if=/dev/zero of=./test bs=4k count=1024 oflag=direct
 
-dd if=/dev/zero of=./test bs=4k count=1024 oflag=dsync
+dd if=/dev/zero of=/tmp/test bs=4k count=1024 oflag=dsync
 ```
 
 ```azure
@@ -51,7 +51,7 @@ etcdctl del --prev-kv --prefix /kubernetes.io/secrets/kruise-system
 
 ```azure
 
-# 便利lease查询
+// 遍历lease查询
 for l in $(etcdctl lease list | grep -v found);do if [ `etcdctl lease timetolive $l -w json | grep 997142320965431125` ]; then  echo -n "$l ";fi;done
 
 ```

@@ -18,4 +18,10 @@ kubectl get cm -n kube-system bootstrap -oyaml --show-managed-fields=true
 ```azure
 // 查看用户的操作权限
 kubectl auth can-i update clusterversions.config.ccos.io/finalizers --as=system:serviceaccount:kube-system:statefulset-controller
+```
 
+###
+```
+// 批量批复pending csr
+kubectl get csr -A | awk '{print $1}' |  tail -n +2 | xargs -n1 kubectl certificate approve
+```
