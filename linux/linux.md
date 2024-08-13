@@ -18,16 +18,17 @@ find /var/log/ -type f | wc -l
 ### 查看系统负载
 ````
 sudo iostat -xz 2 -t  |  查看系统负载
-iostat -xm 1 /dev/sdb | 查看特定磁盘
+iostat -xm 1 /dev/sdb  | 查看特定磁盘
 
 
 // 查询iostat 结果，过滤iowait大于100的情况
 #!/bin/bash
 
-awk '/08\/03\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd"
+sudo iostat -xz 2 -t   > stat.log 
+awk '/08\/04\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd"
 
 // 到处固件日志
-/opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=xxxx.log
+/opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
 
 pidstat -d 2 | 查看各个进程的io情况
 
@@ -37,6 +38,13 @@ sar -f  sa14 -q | 查看历史负载
 iotop -b -d 1 -t | 查看环境io是否有异常
 ````
 
+
+###
+
+```azure
+// 查看 /var/log/pods 日志目录
+du -ah /var/log/pods | sort -rh
+```
 ### 查看CPU负载情况
 ````
 
@@ -47,6 +55,11 @@ awk -F":" '{for (i=1;i<=NF;i++) {a[$i]++}}END {for (i in a) print i,a[i]}'
 
 
 ps -eLo pid,comm,%cpu,psr | 查看进程所在的CPU
+
+// 根据关键词查询线程所在的pid
+ps -eLo pid,tid,comm | grep fsync
+// 根据pid查询进程运行情况
+top -p xxxx
 ````
 
 ### 检查网络参数
