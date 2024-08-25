@@ -17,6 +17,11 @@ find /var/log/ -type f | wc -l
 
 ### 查看系统负载
 ````
+// 运行iofsstat.py脚本
+sudo nohup iostat -xz 2 -t > stat.log &
+sudo nohup python3 ./iofsstat.py -d sde -c 2 > iofsstat.log &
+
+
 sudo iostat -xz 2 -t  |  查看系统负载
 iostat -xm 1 /dev/sdb  | 查看特定磁盘
 
@@ -29,6 +34,7 @@ awk '/08\/04\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -
 
 // 到处固件日志
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
+/opt/MegaRAID/storcli/storcli64 /c0 show aliLog
 
 pidstat -d 2 | 查看各个进程的io情况
 
