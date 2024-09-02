@@ -27,7 +27,7 @@ fi
 
 ### dd命名测试磁盘性能
 ```azure
-dd if=/dev/zero of=./test bs=4k count=1024 oflag=direct
+dd if=/dev/zero of=/tmp/test bs=4k count=1024 oflag=direct
 
 dd if=/dev/zero of=/tmp/test bs=4k count=1024 oflag=dsync
 ```

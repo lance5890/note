@@ -32,7 +32,7 @@ iostat -xm 1 /dev/sdb  | 查看特定磁盘
 sudo iostat -xz 2 -t   > stat.log 
 awk '/08\/04\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd"
 
-// 到处固件日志
+// 导处固件日志
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog
 
@@ -77,6 +77,12 @@ ss -s
 ### 查看D进程
 ```
 ps -e -L  -o pid,psr,state,ucmd  | awk '{if($3=="D"){print $0}}'
+ps -eL -o stat,pid,cmd,wchan | grep ^D
+```
+
+### 查看僵尸进程
+```
+ps -A -ostat,ppid,pid,cmd |grep -e '^[Zz]'
 ```
 
 ### 查看系统启动错误
@@ -247,4 +253,31 @@ END
 // 查看默认网络网关的连接ip
 ip r s default
 ip r get x.x.x.1
+```
+
+
+###
+```azure
+# 检查配置生效，kubelet及线程运行在指定核上
+systemctl show --property=CPUAffinity kubelet crio
+ps -eLo pid,lwp,psr,comm | grep "kubelet\|crio"
+
+# 查看所有容器的cpuset
+printf "%-44s %-64s %-48s %s\n" NAMESPACE POD CONTAINER CPUSET
+for cid in $(crictl ps -q); do
+                            scope=$(find /sys/fs/cgroup/cpuset/ -name "crio-${cid}.scope")
+if [ "${scope}" != "" ]; then
+                         cpuset=$(cat ${scope}/cpuset.cpus)
+    cinfo=$(crictl inspect $cid | jq -r '.status | .labels["io.kubernetes.pod.namespace"] + " " + .labels["io.kubernetes.pod.name"] + " " + .labels["io.kubernetes.container.name"]')
+    printf "%-44s %-64s %-48s %s\n" $cinfo $cpuset
+else
+echo "Error: missing scope for $cid" >> /dev/stderr
+    fi
+done
+```
+
+
+```azure
+# 查看掉盘与否
+journalctl -u multipathd |grep 'active paths'
 ```
