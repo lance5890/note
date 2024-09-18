@@ -4,6 +4,12 @@
 du -sh * (check the file size)
 ````
 
+```azure
+du -sh *
+df -Th
+du -d1 -h
+```
+
 ### Disk
 ````
 lsblk -d -o name,rota
@@ -19,18 +25,18 @@ find /var/log/ -type f | wc -l
 ````
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sde -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sdc -c 2 > iofsstat.log &
 
 
 sudo iostat -xz 2 -t  |  查看系统负载
-iostat -xm 1 /dev/sdb  | 查看特定磁盘
+iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 
 // 查询iostat 结果，过滤iowait大于100的情况
 #!/bin/bash
 
 sudo iostat -xz 2 -t   > stat.log 
-awk '/08\/04\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd"
+awk '/09\/08\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
@@ -50,14 +56,19 @@ iotop -b -d 1 -t | 查看环境io是否有异常
 ```azure
 // 查看 /var/log/pods 日志目录
 du -ah /var/log/pods | sort -rh
+
+// 查看当前目录文件夹大小并排序
+du -sh * | sort -h
+
+// 查看磁盘占用情况
+df -Th
 ```
 ### 查看CPU负载情况
 ````
 
 ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+0[[:space:]]+" | wc -l  | 查看核0上的进程数量
 
-ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+0[[:space:]]+" | wc -l
-awk -F":" '{for (i=1;i<=NF;i++) {a[$i]++}}END {for (i in a) print i,a[i]}'
+ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+0[[:space:]]+" | awk -F":" '{for (i=1;i<=NF;i++) {a[$i]++}}END {for (i in a) print i,a[i]}'
 
 
 ps -eLo pid,comm,%cpu,psr | 查看进程所在的CPU
