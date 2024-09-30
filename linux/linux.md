@@ -25,7 +25,7 @@ find /var/log/ -type f | wc -l
 ````
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sdc -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sdb -c 2 > iofsstat.log &
 
 
 sudo iostat -xz 2 -t  |  查看系统负载
@@ -36,7 +36,7 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 #!/bin/bash
 
 sudo iostat -xz 2 -t   > stat.log 
-awk '/09\/08\/2024/{print $0} /^sd/{ if($12 > 100) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/09\/28\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log

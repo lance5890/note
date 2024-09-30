@@ -8,8 +8,10 @@ kubectl label nodes node-1 node-role.kubernetes.io/worker=
 ### 给节点打标签
 kubectl label nodes <your-node-name> xxx=xxx
 
+###
+kubectl get pods -A --field-selector spec.nodeName=ipi-dev6911-master0 -owide
 
-
+###
 kubectl get --raw /api/v1/nodes/single1/proxy/stats/summary | grep containers -C 5
 
 ### patch 修改资源status
