@@ -28,6 +28,6 @@ kubectl auth can-i update clusterversions.config.ccos.io/finalizers --as=system:
 ```
 
 ###
-```![img.png](img.png)
 // 批量批复pending csr
+kubectl get csr -A | awk '{print $1}' |  tail -n +2 | xargs -n1 kubectl certificate approve
 ```

@@ -43,6 +43,7 @@ etcdctl get --prefix /kubernetes.io/ --keys-only | grep -v "^$" | rev | cut -d/ 
 
 // 查看 / 所有资源的排序
 etcdctl get / --prefix --keys-only | grep -v "^$" | cut -d/ -f3 | sort | uniq -c | sort -rn
+
 ```
 ### 删除指定前缀的key
 ```

@@ -36,7 +36,7 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 #!/bin/bash
 
 sudo iostat -xz 2 -t   > stat.log 
-awk '/09\/28\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/09\/30\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
@@ -46,6 +46,9 @@ pidstat -d 2 | 查看各个进程的io情况
 
 sar -f sa05 |  sar -d -f sa05 | 查看CPU负载
 sar -f  sa14 -q | 查看历史负载
+
+sar -d -f /var/log/sa/sa17
+sar -q -f /var/log/sa/sa17
 
 iotop -b -d 1 -t | 查看环境io是否有异常
 ````
@@ -89,6 +92,14 @@ ss -s
 ```
 ps -e -L  -o pid,psr,state,ucmd  | awk '{if($3=="D"){print $0}}'
 ps -eL -o stat,pid,cmd,wchan | grep ^D
+```
+### 查看0-3核上的R进程
+```azure
+ps -eL -o stat,pid,cmd,wchan,psr | grep -E "^[R]" | grep -E '\s[0-3]$'
+ps -eL -o stat,pid,cmd,wchan,psr | grep -E "^[DR]" 
+
+// 查看 0-3 核上的进程
+ps -eL -o stat,pid,cmd,wchan,psr | grep -E '\s[0-3]$'
 ```
 
 ### 查看僵尸进程
@@ -275,11 +286,11 @@ ps -eLo pid,lwp,psr,comm | grep "kubelet\|crio"
 
 # 查看所有容器的cpuset
 printf "%-44s %-64s %-48s %s\n" NAMESPACE POD CONTAINER CPUSET
-for cid in $(crictl ps -q); do
+for cid in $(sudo crictl ps -q); do
                             scope=$(find /sys/fs/cgroup/cpuset/ -name "crio-${cid}.scope")
 if [ "${scope}" != "" ]; then
                          cpuset=$(cat ${scope}/cpuset.cpus)
-    cinfo=$(crictl inspect $cid | jq -r '.status | .labels["io.kubernetes.pod.namespace"] + " " + .labels["io.kubernetes.pod.name"] + " " + .labels["io.kubernetes.container.name"]')
+    cinfo=$(sudo crictl inspect $cid | jq -r '.status | .labels["io.kubernetes.pod.namespace"] + " " + .labels["io.kubernetes.pod.name"] + " " + .labels["io.kubernetes.container.name"]')
     printf "%-44s %-64s %-48s %s\n" $cinfo $cpuset
 else
 echo "Error: missing scope for $cid" >> /dev/stderr
@@ -291,4 +302,16 @@ done
 ```azure
 # 查看掉盘与否
 journalctl -u multipathd |grep 'active paths'
+```
+
+
+```azure
+# 容器可读可写RW层空间占用top 10情况
+sudo crictl stats -a -o json | jq '.stats[] | .writableLayer.usedBytes.value + " " + .attributes.labels["io.kubernetes.pod.namespace"] + " " + .attributes.labels["io.kubernetes.pod.name"] + " " + .attributes.id' -r | sort -rn | head -n 10
+```
+
+```azure
+# 排查emptyDir（pod临时目录）空间占用情况，找到1GB以上空间占用的目录。
+（注意切换为sudo -s执行）
+for d in $(ls -d /var/lib/kubelet/pods/*/*/kubernetes.io~empty-dir); do du -d1 -h $d; done | grep -E "^[0-9.]*[GT]"
 ```

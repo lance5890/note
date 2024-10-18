@@ -3,6 +3,12 @@
 ```azure
 // 停止cvo
 oc scale --replicas=0 deploy/cluster-version-operator -n openshift-cluster-version
+
+oc auth can-i --as=system:serviceaccount:image-registry:ccos-base-image-registry use scc/privileged
+
+oc adm policy who-can use scc  privileged
+
+oc adm policy add-scc-to-user privileged system:serviceaccount:myproject:mysvcacct
 ```
 
 ###
