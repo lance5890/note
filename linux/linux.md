@@ -42,7 +42,32 @@ awk '/09\/30\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog
 
+// 查看硬盘是否有raid和JBOD直通
+/opt/MegaRAID/storcli/storcli64 /c0 show
+
+```
+# 写延迟抖动超过阈值，打印告警日志，默认1ms
+
+WRITE_AWAIT_THRESHOLD_MS=1
+
+ROOT_DEVICE=$(findmnt / -n -o SOURCE)
+while true; do
+    w_await=$(iostat -x 1 2 $ROOT_DEVICE | grep ^$(basename $ROOT_DEVICE) | tail -n1 | awk '{print $12}')
+
+    if awk 'BEGIN{if ('"$w_await"' > '"$WRITE_AWAIT_THRESHOLD_MS"') exit 0; else exit 1}'; then
+        echo $(date +"%F %T") $w_await
+    fi
+done
+```
+
+
+
+// 查看 disk 插槽
+lsscsi
+
 pidstat -d 2 | 查看各个进程的io情况
+
+pid2pod 
 
 sar -f sa05 |  sar -d -f sa05 | 查看CPU负载
 sar -f  sa14 -q | 查看历史负载
@@ -51,6 +76,8 @@ sar -d -f /var/log/sa/sa17
 sar -q -f /var/log/sa/sa17
 
 iotop -b -d 1 -t | 查看环境io是否有异常
+
+iotop -p 2446398
 ````
 
 
@@ -163,13 +190,6 @@ iostat -xzm 2
 ```azure
 smartctl -g wcache /dev/sda
 sudo dd if=/dev/sda of=/dev/null bs=1M(4k) count=1024 iflag=direct
-```
-
-
-### grep
-```azure
-// 搜索审计日志
-sudo grep -rn "test" /var/log/kube-apiserver/
 ```
 
 ```
@@ -314,4 +334,22 @@ sudo crictl stats -a -o json | jq '.stats[] | .writableLayer.usedBytes.value + "
 # 排查emptyDir（pod临时目录）空间占用情况，找到1GB以上空间占用的目录。
 （注意切换为sudo -s执行）
 for d in $(ls -d /var/lib/kubelet/pods/*/*/kubernetes.io~empty-dir); do du -d1 -h $d; done | grep -E "^[0-9.]*[GT]"
+```
+
+```azure
+//
+sudo chage -l root
+```
+
+```azure
+
+mkdir test;cd test;
+blktrace -w 60 -d /dev/sdb
+blkparse -i sdb -d sdb.blktrace.bin
+btt -i sdb.blktrace.bin | less
+```
+
+// 查看网络流量
+```azure
+sar -n DEV 1 10
 ```

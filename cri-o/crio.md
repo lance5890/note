@@ -14,3 +14,6 @@ sudo crictl inspect `sudo crictl ps -a | awk '{print$1}' | grep -v CONTAINER` | 
 sudo crictl stats -a -o json | jq '.stats[] | .writableLayer.usedBytes.value + " " + .attributes.labels["io.kubernetes.pod.namespace"] + " " + .attributes.labels["io.kubernetes.pod.name"]' -r | sort -rn | head -n 30
 ```
 
+```
+sudo podman images --digests | grep sha256xxx
+```
