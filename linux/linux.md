@@ -7,8 +7,13 @@ du -sh * (check the file size)
 ```azure
 du -sh *
 df -Th
+
+// 查看当前目录下各级目录的大小占用
 du -d1 -h
 ```
+
+# 如何快速找到大的容器目录
+du -sh *只能统计当前目录，不能统计子目录。为了更快定位目录，使用du -h -d 10命令列出10层子目录内的信息，子目录层数可以根据情况调整。
 
 ### Disk
 ````
@@ -31,10 +36,7 @@ sudo nohup python3 ./iofsstat.py -d sdb -c 2 > iofsstat.log &
 sudo iostat -xz 2 -t  |  查看系统负载
 iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
-
 // 查询iostat 结果，过滤iowait大于100的情况
-#!/bin/bash
-
 sudo iostat -xz 2 -t   > stat.log 
 awk '/09\/30\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
@@ -44,6 +46,9 @@ awk '/09\/30\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C
 
 // 查看硬盘是否有raid和JBOD直通
 /opt/MegaRAID/storcli/storcli64 /c0 show
+
+// 查看 硬盘使用寿命
+sudo smartctl -l devstat  /dev/sdb
 
 ```
 # 写延迟抖动超过阈值，打印告警日志，默认1ms
@@ -72,8 +77,8 @@ pid2pod
 sar -f sa05 |  sar -d -f sa05 | 查看CPU负载
 sar -f  sa14 -q | 查看历史负载
 
-sar -d -f /var/log/sa/sa17
-sar -q -f /var/log/sa/sa17
+sar -d -f /var/log/sa/sa17 | 查看历史io
+sar -q -f /var/log/sa/sa17 | 查看历史负载
 
 iotop -b -d 1 -t | 查看环境io是否有异常
 
@@ -100,6 +105,8 @@ ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:spac
 
 ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+0[[:space:]]+" | awk -F":" '{for (i=1;i<=NF;i++) {a[$i]++}}END {for (i in a) print i,a[i]}'
 
+### 根据D R 进程查询系统负载的计算方式
+ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR]
 
 ps -eLo pid,comm,%cpu,psr | 查看进程所在的CPU
 
