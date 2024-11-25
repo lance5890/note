@@ -360,3 +360,8 @@ btt -i sdb.blktrace.bin | less
 ```azure
 sar -n DEV 1 10
 ```
+
+### cgroup 残留
+```
+time cat /sys/fs/cgroup/blkio/blkio.throttle.io_serviced_recursive > /dev/null
+```
