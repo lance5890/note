@@ -38,3 +38,7 @@ kubectl get po -A | grep -v "Run\|Comp" |sed '1d'| awk '{print $1, $2}' | xargs 
 ###
 // 查看sa对应的权限，但是注意区分ns
 kubectl get rolebinding,clusterrolebinding --all-namespaces -o jsonpath='{range .items[?(@.subjects[0].name=="csi-nvmf-sa")]}{.roleRef.kind},{.roleRef.name}{"\n"}{end}'
+
+
+###
+kubectl cp cluster-version-util ccos-cluster-version/cluster-version-operator-86475bc788-bbp49:/tmp/cluster-version-util
