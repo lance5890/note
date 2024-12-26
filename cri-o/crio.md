@@ -17,6 +17,7 @@ sudo crictl inspect `sudo crictl ps -a | awk '{print$1}' | grep -v CONTAINER` | 
 sudo crictl stats -a -o json | jq '.stats[] | .writableLayer.usedBytes.value + " " + .attributes.labels["io.kubernetes.pod.namespace"] + " " + .attributes.labels["io.kubernetes.pod.name"]' -r | sort -rn | head -n 30
 ```
 
+#
 ```
 sudo podman images --digests | grep sha256xxx
 ```
@@ -35,3 +36,7 @@ sudo crictl inspect <容器id> | jq .info.runtimeSpec.root.path -r | sed 's/merg
 ```
 for d in $(ls -d /var/lib/kubelet/pods/*/*/kubernetes.io~empty-dir); do du -d1 -h $d; done | grep -E "^[0-9.]*[GT]"
 ```
+### podman debug
+podman --log-level debug xxx
+
+sudo podman pull --authfile /var/lib/kubelet/config.json image.xxx.io/xx/xx:xxxxxx

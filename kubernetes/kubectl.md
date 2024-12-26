@@ -40,5 +40,7 @@ kubectl get po -A | grep -v "Run\|Comp" |sed '1d'| awk '{print $1, $2}' | xargs 
 kubectl get rolebinding,clusterrolebinding --all-namespaces -o jsonpath='{range .items[?(@.subjects[0].name=="csi-nvmf-sa")]}{.roleRef.kind},{.roleRef.name}{"\n"}{end}'
 
 
-###
+### 从主机上拷贝二进制到pod中
 kubectl cp cluster-version-util ccos-cluster-version/cluster-version-operator-86475bc788-bbp49:/tmp/cluster-version-util
+
+kubectl cp ccos-etcd/etcd-ceaedge-node-1:/usr/bin/etcdctl /home/etcdctl

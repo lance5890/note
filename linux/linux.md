@@ -30,7 +30,7 @@ find /var/log/ -type f | wc -l
 ````
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sdb -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sda -c 2 > iofsstat.log &
 
 
 sudo iostat -xz 2 -t  |  查看系统负载
@@ -108,6 +108,9 @@ ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:spac
 ### 根据D R 进程查询系统负载的计算方式
 ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR]
 
+### 显示运行的核
+ps -e -L -o stat,pid,tid,comm,wchan=DD,psr | grep ^[DR] | sort -nk6
+
 ps -eLo pid,comm,%cpu,psr | 查看进程所在的CPU
 
 // 根据关键词查询线程所在的pid
@@ -150,6 +153,12 @@ journalctl -b -2 -p3 ### 看上上次启动的0-3级错误
 
 ps aux | grep -E "\s+D" ### 查看D住进程
 ```
+
+### 查看容器中进程的权限
+crictl exec -it 84cfcc9014d95 bash
+[root@g11-u14-master3-new /]# ps auxZ
+LABEL                           USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+system_u:system_r:spc_t:s0      root 
 
 ### 查看netns
 ```
@@ -365,3 +374,10 @@ sar -n DEV 1 10
 ```
 time cat /sys/fs/cgroup/blkio/blkio.throttle.io_serviced_recursive > /dev/null
 ```
+
+### scp
+scp -i /home/ccadmin/id_rsa /tmp/xx.tar.gz ccadmin@x.x.x.x:/home/ccadmin
+
+
+###
+openssl x509 -in tls.crt -text -noout
