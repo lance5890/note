@@ -35,6 +35,8 @@ kubectl get csr -A | awk '{print $1}' |  tail -n +2 | xargs -n1 kubectl certific
 // 删除不健康的pod
 kubectl get po -A | grep -v "Run\|Comp" |sed '1d'| awk '{print $1, $2}' | xargs -n2 kubectl delete pod  -n
 
+kubectl delete pod --field-selector=status.phase==Failed --all-namespaces
+
 ###
 // 查看sa对应的权限，但是注意区分ns
 kubectl get rolebinding,clusterrolebinding --all-namespaces -o jsonpath='{range .items[?(@.subjects[0].name=="csi-nvmf-sa")]}{.roleRef.kind},{.roleRef.name}{"\n"}{end}'
@@ -44,3 +46,8 @@ kubectl get rolebinding,clusterrolebinding --all-namespaces -o jsonpath='{range 
 kubectl cp cluster-version-util ccos-cluster-version/cluster-version-operator-86475bc788-bbp49:/tmp/cluster-version-util
 
 kubectl cp ccos-etcd/etcd-ceaedge-node-1:/usr/bin/etcdctl /home/etcdctl
+
+
+
+### 
+kubectl drain  compute-nfv-1223-2 --ignore-daemonsets --force --delete-emptydir-data --timeout=30s

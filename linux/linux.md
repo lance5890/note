@@ -38,7 +38,7 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 // 查询iostat 结果，过滤iowait大于100的情况
 sudo iostat -xz 2 -t   > stat.log 
-awk '/09\/30\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/12\/20\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
@@ -139,6 +139,9 @@ ps -eL -o stat,pid,cmd,wchan,psr | grep -E "^[DR]"
 ps -eL -o stat,pid,cmd,wchan,psr | grep -E '\s[0-3]$'
 ```
 
+### 测试具体cpu 核性能
+time echo "scale=10000;4*a(1)" | taskset -c 4 bc -l    // 4即为具体核
+
 ### 查看僵尸进程
 ```
 ps -A -ostat,ppid,pid,cmd |grep -e '^[Zz]'
@@ -152,6 +155,11 @@ journalctl -b -1 -p3 ### 看上次启动的0-3级错误
 journalctl -b -2 -p3 ### 看上上次启动的0-3级错误
 
 ps aux | grep -E "\s+D" ### 查看D住进程
+```
+
+### 内存回收
+```
+echo 3 > /proc/sys/vm/drop_caches
 ```
 
 ### 查看容器中进程的权限
@@ -379,5 +387,11 @@ time cat /sys/fs/cgroup/blkio/blkio.throttle.io_serviced_recursive > /dev/null
 scp -i /home/ccadmin/id_rsa /tmp/xx.tar.gz ccadmin@x.x.x.x:/home/ccadmin
 
 
-###
+### openssl
 openssl x509 -in tls.crt -text -noout
+
+### 查看内存使用
+cat /proc/meminfo
+
+sudo cat /proc/slabinfo
+slabtop

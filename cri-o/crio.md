@@ -40,3 +40,9 @@ for d in $(ls -d /var/lib/kubelet/pods/*/*/kubernetes.io~empty-dir); do du -d1 -
 podman --log-level debug xxx
 
 sudo podman pull --authfile /var/lib/kubelet/config.json image.xxx.io/xx/xx:xxxxxx
+
+
+### cri-o 堆栈
+systemctl kill -s USR1 crio.service
+
+goroutine堆栈会打到  /tmp/crio-goroutine-stacks-$timestamp.log
