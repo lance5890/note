@@ -41,6 +41,8 @@ podman --log-level debug xxx
 
 sudo podman pull --authfile /var/lib/kubelet/config.json image.xxx.io/xx/xx:xxxxxx
 
+sudo podman pull --tls-verify=false xxxxxx
+
 
 ### cri-o 堆栈
 systemctl kill -s USR1 crio.service

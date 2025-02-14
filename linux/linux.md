@@ -38,9 +38,9 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 // 查询iostat 结果，过滤iowait大于100的情况
 sudo iostat -xz 2 -t   > stat.log 
-awk '/12\/20\/2024/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/02\/08\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
-// 导处固件日志
+// 导处固件日志，搜索 bbu   reset
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog
 
@@ -201,6 +201,11 @@ clockdiff -o
 ### 查询每个节点的时钟
 ```azure
 for host in `kubectl get nodes -owide |sed '1d'|  awk '{print $6}'`; do (echo $host; ssh -i id_rsa -o StrictHostKeyChecking=no ccadmin@"$host" date) done
+```
+
+### 重启每个节点的kubelet
+```
+for host in `kubectl get nodes -owide |sed '1d'|  awk '{print $6}'`; do (echo $host; ssh -i id_rsa -o StrictHostKeyChecking=no ccadmin@"$host" sudo systemctl restart kubelet) done
 ```
 
 ### iostat 查看io瓶颈
@@ -395,3 +400,7 @@ cat /proc/meminfo
 
 sudo cat /proc/slabinfo
 slabtop
+
+
+### 按照内存使用排序
+ps aux --sort=-%mem | head -n 3

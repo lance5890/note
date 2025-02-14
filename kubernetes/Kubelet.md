@@ -8,3 +8,7 @@ systemctl list-dependencies kubelet
 ```
 
 计算 /var/lib/kubelet的方式应该是  du -sh --exclude={*kubernetes.io~local-volume*,*kubernetes.io~csi*} /var/lib/kubelet
+
+
+### 显示kubelet环境变量
+systemctl show kubelet --property Environment
