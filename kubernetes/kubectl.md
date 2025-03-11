@@ -50,4 +50,6 @@ kubectl cp ccos-etcd/etcd-ceaedge-node-1:/usr/bin/etcdctl /home/etcdctl
 
 
 ### 
-kubectl drain  compute-nfv-1223-2 --ignore-daemonsets --force --delete-emptydir-data --timeout=30s
+kubectl cordon xxx
+
+kubectl drain  xxx --ignore-daemonsets --force --delete-emptydir-data --timeout=30s

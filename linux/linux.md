@@ -30,7 +30,7 @@ find /var/log/ -type f | wc -l
 ````
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sda -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sdb -c 2 > iofsstat.log &
 
 
 sudo iostat -xz 2 -t  |  查看系统负载
@@ -38,7 +38,7 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 // 查询iostat 结果，过滤iowait大于100的情况
 sudo iostat -xz 2 -t   > stat.log 
-awk '/02\/08\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/03\/11\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志，搜索 bbu   reset
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
@@ -75,6 +75,7 @@ pidstat -d 2 | 查看各个进程的io情况
 pid2pod 
 
 sar -f sa05 |  sar -d -f sa05 | 查看CPU负载
+sar -r -f sa03 | 查看历史内存
 sar -f  sa14 -q | 查看历史负载
 
 sar -d -f /var/log/sa/sa17 | 查看历史io
@@ -107,6 +108,7 @@ ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:spac
 
 ### 根据D R 进程查询系统负载的计算方式
 ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR]
+ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR] | awk '{print $3}' | sort | uniq -c
 
 ### 显示运行的核
 ps -e -L -o stat,pid,tid,comm,wchan=DD,psr | grep ^[DR] | sort -nk6
@@ -404,3 +406,12 @@ slabtop
 
 ### 按照内存使用排序
 ps aux --sort=-%mem | head -n 3
+
+### 配置大页信息
+vi /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
+reboot
+cat /proc/cmdline
+grep Huge /proc/meminfo
+
+/sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages

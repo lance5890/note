@@ -43,6 +43,7 @@ sudo podman pull --authfile /var/lib/kubelet/config.json image.xxx.io/xx/xx:xxxx
 
 sudo podman pull --tls-verify=false xxxxxx
 
+podman run -it image:xxx /bin/bash
 
 ### cri-o 堆栈
 systemctl kill -s USR1 crio.service
