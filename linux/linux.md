@@ -41,7 +41,7 @@ sudo iostat -xz 2 -t   > stat.log
 awk '/03\/11\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志，搜索 bbu   reset
-/opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=stro.log
+/opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=storcli.log
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog
 
 // 查看硬盘是否有raid和JBOD直通
