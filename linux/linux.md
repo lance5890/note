@@ -28,17 +28,22 @@ find /var/log/ -type f | wc -l
 
 ### 查看系统负载
 ````
+https://gitee.com/anolis/sysak/blob/opensource_branch/source/tools/detect/io/iofsstat/README.md
+
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sdb -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sda -c 2 > iofsstat.log &
+sudo nohup python3 ./iowaitstat.py -c 2 > iowaitstat.log &
 
+
+sudo nohup python3 ./iofsstat.py  -t 20 -m -f -c 2  > iofsstat.log &
 
 sudo iostat -xz 2 -t  |  查看系统负载
 iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 // 查询iostat 结果，过滤iowait大于100的情况
 sudo iostat -xz 2 -t   > stat.log 
-awk '/03\/11\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/03\/27\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志，搜索 bbu   reset
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=storcli.log
