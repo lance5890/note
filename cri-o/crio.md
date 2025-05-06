@@ -49,3 +49,10 @@ podman run -it image:xxx /bin/bash
 systemctl kill -s USR1 crio.service
 
 goroutine堆栈会打到  /tmp/crio-goroutine-stacks-$timestamp.log
+
+
+### 获取火焰图
+sudo curl --unix-socket /var/run/crio/crio.sock http://localhost/debug/pprof/goroutine?debug=4
+sudo curl --unix-socket /var/run/crio/crio.sock http://localhost/debug/pprof/heap > mem.profile
+
+go tool pprof -http=:8080 mem.profile

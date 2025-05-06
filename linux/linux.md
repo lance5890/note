@@ -32,7 +32,7 @@ https://gitee.com/anolis/sysak/blob/opensource_branch/source/tools/detect/io/iof
 
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sda -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sdc -c 2 > iofsstat.log &
 sudo nohup python3 ./iowaitstat.py -c 2 > iowaitstat.log &
 
 
@@ -43,7 +43,7 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 // 查询iostat 结果，过滤iowait大于100的情况
 sudo iostat -xz 2 -t   > stat.log 
-awk '/03\/27\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/04\/25\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志，搜索 bbu   reset
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=storcli.log
@@ -51,6 +51,10 @@ awk '/03\/27\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C
 
 // 查看硬盘是否有raid和JBOD直通
 /opt/MegaRAID/storcli/storcli64 /c0 show
+
+// 查看raid cc
+sudo /opt/MegaRAID/storcli/storcli64 /c0 show cc ccrate
+sudo /opt/MegaRAID/storcli/storcli64 /c0 set cc=conc delay=168 starttime="2025/04/18 02"
 
 // 查看 硬盘使用寿命
 sudo smartctl -l devstat  /dev/sdb
@@ -103,6 +107,9 @@ du -sh * | sort -h
 
 // 查看磁盘占用情况
 df -Th
+
+// 查看inode占用情况
+ df -i
 ```
 ### 查看CPU负载情况
 ````
@@ -112,7 +119,7 @@ ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:spac
 ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+0[[:space:]]+" | awk -F":" '{for (i=1;i<=NF;i++) {a[$i]++}}END {for (i in a) print i,a[i]}'
 
 ### 根据D R 进程查询系统负载的计算方式
-ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR]
+ps -e -L -o stat,pid,comm,psr,wchan=DD | grep ^[DR]
 ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR] | awk '{print $3}' | sort | uniq -c
 
 ### 显示运行的核
@@ -420,3 +427,8 @@ cat /proc/cmdline
 grep Huge /proc/meminfo
 
 /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+
+
+
+### 打开systemd调试日志
+grubby --update-kernel=ALL --args="systemd.log_level=debug systemd.log_target=kmsg" 
