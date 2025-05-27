@@ -43,7 +43,7 @@ iostat -xm 2 /dev/sdc  | 查看特定磁盘
 
 // 查询iostat 结果，过滤iowait大于100的情况
 sudo iostat -xz 2 -t   > stat.log 
-awk '/04\/25\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
+awk '/05\/22\/2025/{print $0} /^sd/{ if($12 > 10) print $0;}' stat.log | grep -C1 -E "^sd" 
 
 // 导处固件日志，搜索 bbu   reset
 /opt/MegaRAID/storcli/storcli64 /c0 show aliLog logfile=storcli.log
@@ -121,6 +121,9 @@ ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:spac
 ### 根据D R 进程查询系统负载的计算方式
 ps -e -L -o stat,pid,comm,psr,wchan=DD | grep ^[DR]
 ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR] | awk '{print $3}' | sort | uniq -c
+
+### 统计用户态进程的内存占用
+grep RssAnon /proc/[1-9]*/status | awk '{total += $2}; END {print total}'
 
 ### 显示运行的核
 ps -e -L -o stat,pid,tid,comm,wchan=DD,psr | grep ^[DR] | sort -nk6
