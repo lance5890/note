@@ -44,10 +44,13 @@ etcdctl get --prefix /kubernetes.io/ --keys-only | grep -v "^$" | rev | cut -d/ 
 // 查看 / 所有资源的排序
 etcdctl get / --prefix --keys-only | grep -v "^$" | cut -d/ -f3 | sort | uniq -c | sort -rn
 
+
 ```
 ### 删除指定前缀的key
 ```
 etcdctl del --prev-kv --prefix /kubernetes.io/secrets/kruise-system
+
+etcdctl get --prefix /kubernetes.io/secrets --keys-only | grep -v "^$" | rev | cut -d/ -f2- | rev | sort | uniq -c | sort -rn | head -n 30 | awk '{print $2}' | xargs -n1 | xargs -n1 etcdctl del --prev-kv --prefix
 ```
 
 ```azure

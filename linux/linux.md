@@ -32,7 +32,7 @@ https://gitee.com/anolis/sysak/blob/opensource_branch/source/tools/detect/io/iof
 
 // 运行iofsstat.py脚本
 sudo nohup iostat -xz 2 -t > stat.log &
-sudo nohup python3 ./iofsstat.py -d sdc -c 2 > iofsstat.log &
+sudo nohup python3 ./iofsstat.py -d sda -c 2 > iofsstat.log &
 sudo nohup python3 ./iowaitstat.py -c 2 > iowaitstat.log &
 
 
@@ -95,6 +95,8 @@ iotop -b -d 1 -t | 查看环境io是否有异常
 iotop -p 2446398
 ````
 
+# 检查盘是否有损坏
+smartctl -A /dev/sda3
 
 ###
 

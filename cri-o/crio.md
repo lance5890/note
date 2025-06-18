@@ -56,3 +56,25 @@ sudo curl --unix-socket /var/run/crio/crio.sock http://localhost/debug/pprof/gor
 sudo curl --unix-socket /var/run/crio/crio.sock http://localhost/debug/pprof/heap > mem.profile
 
 go tool pprof -http=:8080 mem.profile
+
+
+### 配置拉多个远端镜像仓库的映射
+cat registries.conf
+unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
+short-name-mode = ""
+
+[[registry]]
+  prefix = ""
+  location = "gcr.io"
+  mirror-by-digest-only = false
+
+  [[registry.mirror]]
+    location = "image.cestc.cn/ccosdev"
+
+[[registry]]
+  prefix = ""
+  location = "docker.io"
+  mirror-by-digest-only = false
+
+  [[registry.mirror]]
+    location = "image.cestc.cn/ccosdev"
