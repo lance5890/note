@@ -53,3 +53,5 @@ kubectl cp ccos-etcd/etcd-ceaedge-node-1:/usr/bin/etcdctl /home/etcdctl
 kubectl cordon xxx
 
 kubectl drain  xxx --ignore-daemonsets --force --delete-emptydir-data --timeout=30s
+
+kubectl scale deployment cluster-version-operator -nopenshift-cluster-version --replicas=0

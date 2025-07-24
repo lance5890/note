@@ -12,3 +12,12 @@ kubectl get --raw=/metrics | grep apiserver_storage_objects | sort -r -g -k 2
 // 搜索审计日志
 sudo grep -rn "test" /var/log/kube-apiserver/
 ```
+
+
+### 检查apiserver请求
+time curl -k -H "Authorization: Bearer $(kubectl get secret -n ccos-calico $(kubectl get sa -n ccos-calico calico-node -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d)" \
+-H "User-Agent: calico-node/v0.0.0 (linux/amd64) kubernetes/$Format" \
+https://<apiserver-ip>:6443/api/v1/pods?limit=500&resourceVersion=0&resourceVersionMatch=NotOlderThan > /tmp/1.txt
+
+
+time kubectl get --raw '/api/v1/pods?limit=500&resourceVersion=0&resourceVersionMatch=NotOlderThan' --as=system:serviceaccount:ccos-calico:calico-node
