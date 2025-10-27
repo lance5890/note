@@ -124,6 +124,10 @@ ps -eLo pid,tid,psr,comm | grep -E "^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:spac
 ps -e -L -o stat,pid,comm,psr,wchan=DD | grep ^[DR]
 ps -e -L -o stat,pid,comm,wchan=DD | grep ^[DR] | awk '{print $3}' | sort | uniq -c
 
+
+//查看内核日志
+journalctl  -k -r -p3
+
 ### 统计用户态进程的内存占用
 grep RssAnon /proc/[1-9]*/status | awk '{total += $2}; END {print total}'
 
@@ -437,3 +441,6 @@ grep Huge /proc/meminfo
 
 ### 打开systemd调试日志
 grubby --update-kernel=ALL --args="systemd.log_level=debug systemd.log_target=kmsg" 
+
+### dnf卸载指令
+dnf remove golang

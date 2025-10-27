@@ -63,4 +63,4 @@ users:
 ```
 
 【bootstrap节点上kubeconfig丢失后环境拯救】
-ccos login https://oauth-ccos.apps.cluster718.region718.cicd.cn:6443 -u admin -p 'Adm1n@123!^&' --insecure-skip-tls-verify
+oc login https://x.x.x.x:6443 -u admin -p 'xxxxxx' --insecure-skip-tls-verify

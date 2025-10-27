@@ -78,3 +78,15 @@ short-name-mode = ""
 
   [[registry.mirror]]
     location = "image.cestc.cn/ccosdev"
+
+
+
+### 查看容器退出状态
+sudo cat /var/run/containers/storage/overlay-containers/<container-id>/userdata/exit
+
+
+### gdb 
+dlv core {elf_exec} {coredump_file}
+
+### strace指令查看调用
+strace /usr/bin/crictl ps

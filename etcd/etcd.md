@@ -65,3 +65,7 @@ for l in $(etcdctl lease list | grep -v found);do if [ `etcdctl lease timetolive
 for key in $(etcdctl get /kubernetes.io/ --prefix --keys-only );do value=$(etcdctl get "$key" --print-value-only);if [[ "$value" == *"ceaedge-node-1"* ]]; then echo "$key" >> node_name.txt;fi;done
 
 ```
+
+
+### 查找etcd资源
+for i in `crictl exec 7a23a0409286b etcdctl get /kubernetes.io/appmarket.ccos.io/applications --prefix --keys-only | grep -v ^$ | rev | cut -d/ -f1 | rev`;do echo =====$i======;kubectl get applications $i --no-headers;done
