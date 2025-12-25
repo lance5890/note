@@ -69,3 +69,8 @@ for key in $(etcdctl get /kubernetes.io/ --prefix --keys-only );do value=$(etcdc
 
 ### 查找etcd资源
 for i in `crictl exec 7a23a0409286b etcdctl get /kubernetes.io/appmarket.ccos.io/applications --prefix --keys-only | grep -v ^$ | rev | cut -d/ -f1 | rev`;do echo =====$i======;kubectl get applications $i --no-headers;done
+
+
+
+### etcdctl watch
+etcdctl watch --prefix /kubernetes.io/  | awk '{print $1}'

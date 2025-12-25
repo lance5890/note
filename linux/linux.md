@@ -90,6 +90,8 @@ sar -f  sa14 -q | 查看历史负载
 sar -d -f /var/log/sa/sa17 | 查看历史io
 sar -q -f /var/log/sa/sa17 | 查看历史负载
 
+sar -f /var/log/sa/sa07  -b -s 10:20:00 -e 10:30:00
+
 iotop -b -d 1 -t | 查看环境io是否有异常
 
 iotop -p 2446398

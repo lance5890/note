@@ -55,3 +55,10 @@ kubectl cordon xxx
 kubectl drain  xxx --ignore-daemonsets --force --delete-emptydir-data --timeout=30s
 
 kubectl scale deployment cluster-version-operator -nopenshift-cluster-version --replicas=0
+
+
+### 并发读为10来删除资源
+kubectl get ns --kubeconfig /etc/karmada/karmada-apiserver.config --sort-by='{.metadata.creationTimestamp}' --no-headers | \
+grep tenant-2041 | \
+awk '{print $1}' | \
+xargs -I {} -P 10 kubectl delete ns {} --kubeconfig /etc/karmada/karmada-apiserver.config --wait=false
